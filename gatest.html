@@ -21,7 +21,7 @@
   var VIEW_ID = '249550059';
 
   // Query the API and print the results to the page.
-  function queryReports() {
+  /*function queryReports() {
     gapi.client.request({
       path: '/v4/reports:batchGet',
       root: 'https://analyticsreporting.googleapis.com/',
@@ -45,8 +45,29 @@
         ]
       }
     }).then(displayResults, console.error.bind(console));
-  }
+  }*/
 
+  // User report
+    function queryReports() {
+    gapi.client.request({
+                          path: '/v4/userActivity:search',
+                          root: 'https://analyticsreporting.googleapis.com/',
+                          method: 'POST',
+                          body: {
+                                  "viewId": VIEW_ID,
+                                  "user": {
+                                            "type": "CLIENT_ID",
+                                            "userId": "1477525226.1629657823"
+                                          },
+                                 "dateRange": {
+                                          "startDate": "2021-08-22",
+                                          "endDate": "2021-08-23",
+                                        }
+                          }
+                        }).then(displayResults, console.error.bind(console));
+  }
+  
+  
   function displayResults(response) {
     var formattedJson = JSON.stringify(response.result, null, 2);
     document.getElementById('query-output').value = formattedJson;
