@@ -1,0 +1,69 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+<section id="ebayWrapper" class="c-related-articles" role="complementary">
+        <h2>Hot sideboards in your local area</h2>
+                  
+    </section>
+<script>
+
+$.getJSON("http://ip-api.com/json", getPostcode);
+
+function getPostcode(data)
+{
+	$.getJSON("https://api.postcodes.io/postcodes?lon="+data.lon+"&lat="+data.lat, getEbayResults);
+}
+
+function getEbayResults(data)
+{
+	console.log("Postcode: " + data.result[0].postcode);
+	$.getJSON("https://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsAdvanced&SERVICE-VERSION=1.0.0&SECURITY-APPNAME=AlexDavi-BHF-PRD-bd28208d7-9c463f6b&keywords=sideboard&itemFilter(0).name=Seller&itemFilter(0).value(0)=bhf_shops&itemFilter(1).name=MaxDistance&itemFilter(1).value(0)=25&buyerPostalCode="+data.result[0].postcode+"&GLOBAL-ID=EBAY-GB&RESPONSE-DATA-FORMAT=json", 
+	buildOutput);
+}
+
+function buildOutput(data)
+{
+	for (var i = 0; i < 6; i++) {
+		var obj = data.findItemsAdvancedResponse[0].searchResult[0].item[i];
+
+		console.log(obj.itemId, obj.title, obj.viewItemURL, obj.galleryUrl);
+		var article = document.createElement("article");
+
+		var itemlink = document.createElement("a");
+		itemlink.href = obj.viewItemURL;
+		itemlink.setAttribute('target', '_blank');
+
+		var imgdiv = document.createElement("div");
+		imgdiv.classList.add("item-img")
+
+		var img = document.createElement("img");
+		img.src = obj.galleryURL;
+		img.alt = obj.title;
+		imgdiv.appendChild(img);
+
+		itemlink.appendChild(imgdiv);
+
+		var contentdiv = document.createElement("div");
+		contentdiv.classList.add("item-content");
+		var titleHeading = document.createElement("h1");
+		var titleText = document.createTextNode(obj.title);
+		titleHeading.appendChild(titleText);
+
+		var locationText = document.createTextNode("Location: " + obj.location);
+		contentdiv.appendChild(titleHeading);
+		contentdiv.appendChild(locationText);
+
+		itemlink.appendChild(contentdiv);
+
+		article.appendChild(itemlink);
+
+		var element = document.getElementById("ebayWrapper");
+		element.appendChild(article);
+	}
+}
+
+</script>
+</body>
+</html>
